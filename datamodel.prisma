@@ -1,0 +1,6 @@
+type Message {
+  id: ID! @id
+  text: String!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
