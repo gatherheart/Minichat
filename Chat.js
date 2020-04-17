@@ -38,10 +38,8 @@ const NEW_MESSAGE = gql`
 `;
 
 function Chat() {
-  console.log("Rendering");
   // Get Messages saved in server using apollo-client
   const { data: prevData, error, loading } = useQuery(GET_MESSAGES);
-  console.log(prevData);
   const [message, setMessage] = useState("");
 
   // To Save Historical Data
@@ -71,7 +69,6 @@ function Chat() {
 
   const handleNewMessage = () => {
     if (data === undefined) return;
-    console.log("Handle New Message");
     const { newMessage } = data;
     setMessages((previous) => [...previous, newMessage]);
   };
@@ -83,7 +80,6 @@ function Chat() {
   // Use Memoization, not causing re-rendering
   useMemo(() => {
     setMessages(prevData?.messages);
-    console.log("Memoization");
   }, [prevData]);
 
   if (loading || !messages) return <WithSuspense />;

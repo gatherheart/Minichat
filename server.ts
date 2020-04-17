@@ -1,6 +1,7 @@
 import { GraphQLServer } from "graphql-yoga";
 import { prisma } from "./generated/prisma-client";
-// ... or using `require()`
+import axios from "axios";
+import "./env";
 
 const typeDefs = `
   type Message {
@@ -24,7 +25,18 @@ const resolvers = {
   },
 
   Mutation: {
-    sendMessage: (_, { text }) => prisma.createMessage({ text }),
+    sendMessage: async (_, { text }) => {
+      const { data } = await axios.post(
+        "https://exp.host/--/api/v2/push/send",
+        {
+          to: process.env.TOKEN,
+          title: "New Message",
+          body: text,
+        }
+      );
+      console.log(data);
+      return prisma.createMessage({ text });
+    },
   },
 
   Subscription: {
