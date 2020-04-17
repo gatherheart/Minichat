@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import gql from "graphql-tag";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useQuery, useMutation, useSubscription } from "@apollo/react-hooks";
 import WithSuspense from "./WithSuspense";
 
 const GET_MESSAGES = gql`
@@ -28,17 +28,31 @@ const SEND_MESSAGE = gql`
   }
 `;
 
+const NEW_MESSAGE = gql`
+  subscription newMessage {
+    newMessage {
+      id
+      text
+    }
+  }
+`;
+
 function Chat() {
-  // Get Messages using apollo-client from server
-  const { data, error, loading } = useQuery(GET_MESSAGES);
+  console.log("Rendering");
+  // Get Messages saved in server using apollo-client
+  const { data: prevData, error, loading } = useQuery(GET_MESSAGES);
+  console.log(prevData);
   const [message, setMessage] = useState("");
 
   // To Save Historical Data
   const [messages, setMessages] = useState([]);
+  // Send Message
   const [sendMessageMutation, _] = useMutation(SEND_MESSAGE);
 
+  // Get a Message updated using subscription
+  const { data } = useSubscription(NEW_MESSAGE);
+
   const onChangeText = (text) => {
-    console.log(text);
     setMessage(text);
   };
 
@@ -55,10 +69,22 @@ function Chat() {
     }
   };
 
+  const handleNewMessage = () => {
+    if (data === undefined) return;
+    console.log("Handle New Message");
+    const { newMessage } = data;
+    setMessages((previous) => [...previous, newMessage]);
+  };
+
+  useEffect(() => {
+    handleNewMessage();
+  }, [data]);
+
   // Use Memoization, not causing re-rendering
   useMemo(() => {
-    setMessages(data?.messages);
-  }, [data]);
+    setMessages(prevData?.messages);
+    console.log("Memoization");
+  }, [prevData]);
 
   if (loading || !messages) return <WithSuspense />;
 
