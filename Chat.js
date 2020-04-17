@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   View,
   Text,
@@ -29,12 +29,14 @@ const SEND_MESSAGE = gql`
 `;
 
 function Chat() {
+  console.log("Rendering");
   const { data, error, loading } = useQuery(GET_MESSAGES);
   const [message, setMessage] = useState("");
-  const [sendMessageMutation, { data: data_m }] = useMutation(SEND_MESSAGE);
-  console.log(data, loading);
-  console.log(data_m);
-
+  const [messages, setMessages] = useState([]);
+  const [sendMessageMutation, _] = useMutation(SEND_MESSAGE);
+  console.log(data);
+  console.log(error, loading);
+  console.log("________________________");
   const onChangeText = (text) => {
     console.log(text);
     setMessage(text);
@@ -46,7 +48,6 @@ function Chat() {
     try {
       await sendMessageMutation({
         variables: { text: message },
-        refetchQueries: () => [{ query: GET_MESSAGES }],
       });
       setMessage("");
     } catch (e) {
@@ -54,7 +55,14 @@ function Chat() {
     }
   };
 
+  // Use Memoization, not causing re-rendering
+  useMemo(() => {
+    console.log("Memoization");
+    setMessages(data?.messages);
+  }, [data]);
+
   if (loading) return <WithSuspense />;
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
