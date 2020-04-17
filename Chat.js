@@ -29,14 +29,14 @@ const SEND_MESSAGE = gql`
 `;
 
 function Chat() {
-  console.log("Rendering");
+  // Get Messages using apollo-client from server
   const { data, error, loading } = useQuery(GET_MESSAGES);
   const [message, setMessage] = useState("");
+
+  // To Save Historical Data
   const [messages, setMessages] = useState([]);
   const [sendMessageMutation, _] = useMutation(SEND_MESSAGE);
-  console.log(data);
-  console.log(error, loading);
-  console.log("________________________");
+
   const onChangeText = (text) => {
     console.log(text);
     setMessage(text);
@@ -57,11 +57,10 @@ function Chat() {
 
   // Use Memoization, not causing re-rendering
   useMemo(() => {
-    console.log("Memoization");
     setMessages(data?.messages);
   }, [data]);
 
-  if (loading) return <WithSuspense />;
+  if (loading || !messages) return <WithSuspense />;
 
   return (
     <KeyboardAvoidingView
@@ -76,7 +75,7 @@ function Chat() {
           alignItems: "center",
         }}
       >
-        {data.messages.map((m) => (
+        {messages.map((m) => (
           <View key={m.id} style={{ marginBottom: 10 }}>
             <Text>{m.text}</Text>
           </View>
