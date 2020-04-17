@@ -2,9 +2,9 @@ import React from "react";
 import { View, Text, ScrollView, TextInput } from "react-native";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
-import withSuspense from "./WithSuspense";
+import WithSuspense from "./WithSuspense";
 
-const CHAT = gql`
+const GET_MESSAGES = gql`
   query messages {
     messages {
       id
@@ -14,11 +14,9 @@ const CHAT = gql`
 `;
 
 function Chat() {
-  const { data, error } = useQuery(CHAT, { suspense: true });
-  console.log(data);
-  if (!data) return null;
-  const { messages } = data;
-
+  const { data, error, loading } = useQuery(GET_MESSAGES);
+  console.log(data, loading);
+  if (loading) return <WithSuspense />;
   return (
     <ScrollView
       contentContainerStyle={{
@@ -28,13 +26,13 @@ function Chat() {
         alignItems: "center",
       }}
     >
-      {messages
-        ? messages.map((message) => (
-            <Text key={message.id}>{message.text}</Text>
-          ))
-        : null}
+      {data.messages.map((m) => (
+        <View key={m.id} style={{ marginBottom: 10 }}>
+          <Text>{m.text}</Text>
+        </View>
+      ))}
     </ScrollView>
   );
 }
 
-export default withSuspense(Chat);
+export default Chat;
