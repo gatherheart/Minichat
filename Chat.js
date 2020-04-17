@@ -16,6 +16,9 @@ const CHAT = gql`
 function Chat() {
   const { data, error } = useQuery(CHAT, { suspense: true });
   console.log(data);
+  if (!data) return null;
+  const { messages } = data;
+
   return (
     <ScrollView
       contentContainerStyle={{
@@ -25,7 +28,11 @@ function Chat() {
         alignItems: "center",
       }}
     >
-      <Text>Hello</Text>
+      {messages
+        ? messages.map((message) => (
+            <Text key={message.id}>{message.text}</Text>
+          ))
+        : null}
     </ScrollView>
   );
 }
