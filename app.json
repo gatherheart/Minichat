@@ -2,11 +2,7 @@
   "expo": {
     "name": "minichat",
     "slug": "minichat",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,9 +14,11 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
+    "notification": {
+      "androidMode": "collapse",
+      "androidCollapsedTitle": "#{unread_notifications} new interactions"
+    },
     "ios": {
       "supportsTablet": true
     }

@@ -32,6 +32,8 @@ const resolvers = {
           to: process.env.TOKEN,
           title: "New Message",
           body: text,
+          _displayInForeground: true,
+          channelId: "chat-messages",
         }
       );
       console.log(data);
